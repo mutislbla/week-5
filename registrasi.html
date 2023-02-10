@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container"> 
+        <div class="row">
+            <div class="col-sm-12">
+                <br>
+                <button class="btn btn-primary" onclick="showTabRegister()"> REGISTER</button>
+                <button class="btn btn-primary" onclick="showTabPendaftar()"> List Pendaftar</button>
+                <br>
+            </div>
+            <div id="tab_register">
+                <h3>REGISTER</h3>
+                <div class="form-group">
+                    <label for="nama">Nama</label>
+                    <input type="text" class="form-control" id="inputNama" placeholder="Masukkan nama anda minimal 10 karakter">
+                </div>
+                <div class="form-group">
+                    <label for="umur">Umur</label>
+                    <input type="text" class="form-control" id="inputUmur" placeholder="Masukkan umur anda minimal 25 tahun">
+                </div>
+                <div class="form-group">
+                    <label for="sangu">Sangu</label>
+                    <input type="text" class="form-control" id="inputSangu" placeholder="Masukkan sangu anda diantara 100.000 hingga 1.000.000">
+                </div>
+                <button class="btn btn-primary" onclick="submitRegister()">Submit</button>
+            </div>
+            <div id="tab_list_pendaftar" class="row">
+                <div class="col-sm-12">
+                    <h3>LIST PENDAFTAR</h3>
+                    <h5>Resume</h5>
+                    <p id="resume"></p>
+                    <table class="table" id="tableList">
+                        <thead>
+                            <tr>
+                                <td>Nama</td>
+                                <td>Umur</td>
+                                <td>Sangu</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- akan diinject -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="lib.js"> </script>
+    <script>
+        let data =[]
+        console.log(data);
+        function submitRegister(){
+            let nama = document.getElementById("inputNama")
+            let umur = document.getElementById("inputUmur")
+            let sangu = document.getElementById("inputSangu")
+            let resume = document.getElementById("resume")
+            let total_umur = 0
+            let total_sangu = 0
+            let rata_rata_umur = 0
+            let rata_rata_sangu = 0
+            // Number() untuk mengconvert dari string ke integer
+            if (Number(umur.value) >= 25){
+                if (Number(sangu.value) >= 100000 && Number(sangu.value) <= 1000000){
+                    if (nama.value.length >= 10){
+                        data.push({
+                            nama : nama.value,
+                            umur : umur.value,
+                            sangu : sangu.value
+                        })
+                        const trdel =document.getElementsByTagName("tbody")[0]
+                        trdel.remove()
+                        const tbody = document.createElement("tbody")
+                        for (let index = 0; index < data.length; index++) {
+                            const tr = document.createElement("tr")
+                            tablelist = document.getElementById("tableList")
+
+                            const tdNama = document.createElement("td")
+                            const valueNama = document.createTextNode(data[index].nama)
+                            tdNama.appendChild(valueNama)
+
+                            const tdUmur = document.createElement("td")
+                            const valueUmur = document.createTextNode(data[index].umur)
+                            tdUmur.appendChild(valueUmur)
+
+                            const tdSangu = document.createElement("td")
+                            const valueSangu = document.createTextNode(data[index].sangu)
+                            tdSangu.appendChild(valueSangu)
+
+                            tr.appendChild(tdNama)
+                            tr.appendChild(tdUmur)
+                            tr.appendChild(tdSangu)
+
+                            tbody.appendChild(tr)
+                        }
+
+                        const calc = new Statistik(data)
+                        // calc.hitungTotalUmur()
+                        // calc.hitungTotalSangu()
+                        // calc.outputData()
+                        calc.hitungAll()
+                        total_umur = calc.totalUmur
+                        total_sangu = calc.totalSangu
+
+                        resume.innerHTML = `rata rata pendaftar memiliki uang sangu sebesar ${Math.round(total_sangu/data.length)} dengan rata rata umur ${Math.round(total_umur/data.length)}`
+                        tablelist.appendChild(tbody)
+                        console.log(data);
+                    }
+                    else{
+                        alert("panjang nama kurang dari 10 karakter")
+                    }
+                }else{
+                    alert("sangu minimal 100.000 hingga 1.000.000")
+                }
+            } else{
+                alert("umur kurang dari 25 tahun")
+            }
+        }
+        function showTabRegister(){
+            document.getElementById("tab_register").style.display = "block"
+            document.getElementById("tab_list_pendaftar").style.display = "none"
+        }
+        function showTabPendaftar(){
+            document.getElementById("tab_register").style.display = "none"
+            document.getElementById("tab_list_pendaftar").style.display = "block"
+        }
+    </script>
+  </body>
+</html>
